@@ -51,6 +51,7 @@ namespace DictionarySpeedTests.TernarySearchTreeDictionaries
                         if (index == normalisedKey.Length)
                         {
                             node.IsKey = true;
+                            node.KeyLength = normalisedKey.Length; // This is only used in the measuring of how well balanced the tree is
                             node.Value = entry.Value;
                             break;
                         }
@@ -96,6 +97,7 @@ namespace DictionarySpeedTests.TernarySearchTreeDictionaries
             public Node MiddleChild { get; set; }
             public Node RightChild { get; set; }
             public bool IsKey { get; set; }
+            public int KeyLength { get; set; } // This is only used in the measuring of how well balanced the tree is
             public TValue Value { get; set; }
         }
 
@@ -175,6 +177,34 @@ namespace DictionarySpeedTests.TernarySearchTreeDictionaries
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        /// <summary>
+        /// Get the average ratio of Depth-to-Key-Length (Depth will always be greater or equal to the Key Length). The lower the value, the better balanced the
+        /// tree and the better the performance should be (1 would the lowest value and would mean that all paths were optimal but this is not realistic with
+        /// real data - less than 2.5 should yield excellent performance)
+        /// </summary>
+        public float GetBalanceFactor()
+        {
+            var keyNodes = new[] { Tuple.Create(_root, 1) }.Concat(GetChildNodesWithDepths(_root, 2)).Where(n => n.Item1.IsKey);
+            return keyNodes.Sum(n => (float)n.Item2 / (float)n.Item1.KeyLength) / keyNodes.Count();
+        }
+
+        private IEnumerable<Tuple<Node, int>> GetChildNodesWithDepths(Node node, int depth)
+        {
+            if (node == null)
+                throw new ArgumentNullException("node");
+
+            var nodes = new List<Tuple<Node, int>>();
+            foreach (var childNode in new[] { node.LeftChild, node.MiddleChild, node.RightChild })
+            {
+                if (childNode != null)
+                {
+                    nodes.Add(Tuple.Create(childNode, depth));
+                    nodes.AddRange(GetChildNodesWithDepths(childNode, depth + 1));
+                }
+            }
+            return nodes;
         }
     }
 }

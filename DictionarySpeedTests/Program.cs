@@ -40,14 +40,18 @@ namespace DictionarySpeedTests
             var data2 = new BitShiftingStructSearchDictionaryWithKeyNotFoundNode<string, float>(data);
             Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.fff") + " Generating data3..");
             var data3 = new BitShiftingStructSearchDictionary<string, float>(data);
-            Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.fff") + " Generating data4..");
+            Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.fff") + " Generating data4 [TernarySearchTree-Unsorted]..");
             var data4 = new TernarySearchTreeDictionary<float>(data, new DefaultStringNormaliser());
-            Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.fff") + " Generating data5..");
+            Console.WriteLine(" > BalanceFactor: " + data4.GetBalanceFactor());
+            Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.fff") + " Generating data5 [TernarySearchTree-Alphabetical]..");
             var data5 = new TernarySearchTreeDictionary<float>(GetAlphabeticalSortedData(data), new DefaultStringNormaliser());
-            Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.fff") + " Generating data6..");
+            Console.WriteLine(" > BalanceFactor: " + data5.GetBalanceFactor());
+            Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.fff") + " Generating data6 [TernarySearchTree-RandomSorted]..");
             var data6 = new TernarySearchTreeDictionary<float>(GetRandomSortedData(data, 0), new DefaultStringNormaliser());
-            Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.fff") + " Generating data7..");
+            Console.WriteLine(" > BalanceFactor: " + data6.GetBalanceFactor());
+            Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.fff") + " Generating data7 [TernarySearchTree-SearchTreeSortedData]..");
             var data7 = new TernarySearchTreeDictionary<float>(GetSearchTreeSortedData<float>(data), new DefaultStringNormaliser());
+            Console.WriteLine(" > BalanceFactor: " + data7.GetBalanceFactor());
             Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.fff") + " Generating data8..");
             var data8 = new TernarySearchTreeStructDictionary<float>(GetSearchTreeSortedData<float>(data), new DefaultStringNormaliser());
             Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.fff") + " - Done");
@@ -56,14 +60,17 @@ namespace DictionarySpeedTests
             var innerLoopsCount = 1000;
 
             // The reverseKeyChance value specifies how many of the keys that are taken as a random subset of the input data are reversed such that some of the requested
-            // keys will exist in the data and some won't (a value of 0 means that no keys are reversed, 1 means that they all are)
-            //  - reverseKeyChance 1 (none of the searched-for keys exist in the data): BinarySearchTree is slower, 0.75x the speed of the standard dictionary
-            //  - reverseKeyChance 0.95: BinarySearchTree is slower, 0.93x
-            //  - reverseKeyChance 0.9: BinarySearchTree is slightly slower, 0.98x
-            //  - reverseKeyChance 0.75: BinarySearchTree is faster, over 1.2x
-            //  - reverseKeyChance 0.5: BinarySearchTree is faster, over 1.5x
-            //  - reverseKeyChance 0 (all of the searched-for keys exist in the data): BinarySearchTree is faster, over 2.1x the speed of the standard dictionary
-            var reverseKeyChance = 0f;
+            // keys will exist in the data and some won't (a value of 0 means that no keys are reversed, 1 means that they all are). Having run these tests a few times
+            // I've found the following results (in Release builds, which show better results for the search tree than Debug).
+            //  - reverseKeyChance 1 (none of the searched-for keys exist in the data): TernarySearchTree is slightly slower, 0.97x the speed of the standard dictionary
+            //  - reverseKeyChance 0.99: TernarySearchTree is slightly slower, 0.99x
+            //  - reverseKeyChance 0.98: TernarySearchTree is slightly faster, almost 1.05x
+            //  - reverseKeyChance 0.97: TernarySearchTree is slightly faster, almost 1.1x
+            //  - reverseKeyChance 0.9: TernarySearchTree is faster, over 1.2x
+            //  - reverseKeyChance 0.75: TernarySearchTree is faster, over 1.42x
+            //  - reverseKeyChance 0.5: TernarySearchTree is faster, over 1.9x
+            //  - reverseKeyChance 0 (all of the searched-for keys exist in the data): TernarySearchTree is faster, over 2.8x the speed of the standard dictionary
+            var reverseKeyChance = 0.5f;
             var keysToRetrieve = GetKeysToRetrieve(data.Keys, 100, 0, reverseKeyChance);
 
             var TotalTime0 = new TimeSpan(0);
@@ -97,6 +104,7 @@ namespace DictionarySpeedTests
                 TotalTime0 = TotalTime0.Add(time0.TimeTaken);
                 Console.WriteLine(((float)((index + 1) * 100) / (float)outerLoopRepeatCount).ToString("0.000") + "% complete..");
             }
+            Console.WriteLine("reverseKeyChance: " + reverseKeyChance);
             var improvement1 = TotalTime0.TotalMilliseconds / TotalTime1.TotalMilliseconds;
             Console.WriteLine("improvement1 [BitShiftDictionary]: " + improvement1);
             var improvement2 = TotalTime0.TotalMilliseconds / TotalTime2.TotalMilliseconds;
@@ -108,11 +116,14 @@ namespace DictionarySpeedTests
             var improvement5 = TotalTime0.TotalMilliseconds / TotalTime5.TotalMilliseconds;
             Console.WriteLine("improvement5 [TernarySearchTree-Alphabetical]: " + improvement5);
             var improvement6 = TotalTime0.TotalMilliseconds / TotalTime6.TotalMilliseconds;
-            Console.WriteLine("improvement6 [TernarySearchTree-HashSorted]: " + improvement6);
+            Console.WriteLine("improvement6 [TernarySearchTree-RandomSorted]: " + improvement6);
 			var improvement7 = TotalTime0.TotalMilliseconds / TotalTime7.TotalMilliseconds;
             Console.WriteLine("improvement7 [TernarySearchTree-SearchTreeSortedData]: " + improvement7);
 			var improvement8 = TotalTime0.TotalMilliseconds / TotalTime8.TotalMilliseconds;
             Console.WriteLine("improvement8 [TernarySearchTree-SearchTreeSortedData, struct store]: " + improvement8);
+
+            Console.WriteLine("Press [Enter] to continue..");
+            Console.ReadLine();
 		}
 
         private static string[] GetKeysToRetrieve(IEnumerable<string> keys, int count, int seed, double flipValueChance)

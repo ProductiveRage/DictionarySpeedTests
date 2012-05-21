@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using DictionarySpeedTests.BitShiftingSearchDictionaries;
+using DictionarySpeedTests.StringNormalisers;
 using DictionarySpeedTests.TernarySearchTreeDictionaries;
 
 namespace DictionarySpeedTests
@@ -16,11 +17,11 @@ namespace DictionarySpeedTests
         // MAIN
         // ========================================================================================================================================================
         static void Main(string[] args)
-		{
+        {
             // The file "SampleData.dat" is derived from data obtained by querying the New York Times Article Search API in my FullTextIndexer project (and then
             // manipulated to remove dependencies to any classes in that work). From what I understand of the API's Terms of Use it's fine to distribute this
             // data here (it's essentially just a set of words that appear in some of their articles). I used that so that there was a real set of data to
-            // operate on (there's 82,000-ish keys so it's not a small set but not enormous by any stretch).
+            // operate on (there's 86,000-ish keys so it's not a small set but not enormous by any stretch).
             Dictionary<string, float> data;
             using (var stream = new FileInfo("SampleData.dat").OpenRead())
             {
@@ -42,16 +43,16 @@ namespace DictionarySpeedTests
             var data3 = new BitShiftingStructSearchDictionary<string, float>(data);
             Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.fff") + " Generating data4 [TernarySearchTree-Unsorted]..");
             var data4 = new TernarySearchTreeDictionary<float>(data, new DefaultStringNormaliser());
-            Console.WriteLine(" > BalanceFactor: " + data4.GetBalanceFactor());
+            Console.WriteLine(" > BalanceFactor: " + data4.BalanceFactor);
             Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.fff") + " Generating data5 [TernarySearchTree-Alphabetical]..");
             var data5 = new TernarySearchTreeDictionary<float>(GetAlphabeticalSortedData(data), new DefaultStringNormaliser());
-            Console.WriteLine(" > BalanceFactor: " + data5.GetBalanceFactor());
+            Console.WriteLine(" > BalanceFactor: " + data5.BalanceFactor);
             Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.fff") + " Generating data6 [TernarySearchTree-RandomSorted]..");
             var data6 = new TernarySearchTreeDictionary<float>(GetRandomSortedData(data, 0), new DefaultStringNormaliser());
-            Console.WriteLine(" > BalanceFactor: " + data6.GetBalanceFactor());
+            Console.WriteLine(" > BalanceFactor: " + data6.BalanceFactor);
             Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.fff") + " Generating data7 [TernarySearchTree-SearchTreeSortedData]..");
             var data7 = new TernarySearchTreeDictionary<float>(GetSearchTreeSortedData<float>(data), new DefaultStringNormaliser());
-            Console.WriteLine(" > BalanceFactor: " + data7.GetBalanceFactor());
+            Console.WriteLine(" > BalanceFactor: " + data7.BalanceFactor);
             Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.fff") + " Generating data8..");
             var data8 = new TernarySearchTreeStructDictionary<float>(GetSearchTreeSortedData<float>(data), new DefaultStringNormaliser());
             Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.fff") + " - Done");

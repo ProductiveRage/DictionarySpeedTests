@@ -6,9 +6,10 @@ namespace DictionarySpeedTests.StringNormalisers
     /// This will match common strings where one is the plural and the other the singular version of the same word. It not intended to be perfect and may
     /// match a few false positives, but it should catch most of the most common cases.
     /// </summary>
-    public class EnglishPluarityStringNormaliser : IStringNormaliser
+    [Serializable]
+    public class EnglishPluarityStringNormaliser : StringNormaliser
     {
-        public string GetNormalisedString(string value)
+        public override string GetNormalisedString(string value)
         {
             if (value == null)
                 throw new ArgumentNullException("value");
@@ -46,26 +47,6 @@ namespace DictionarySpeedTests.StringNormalisers
             // in "s" due to the suffix set "ses", "es", "s" above - we need to ensure that "cat" is transformed to "cat[ses][es][s]" in order to match "cats"
             // which will get that form applied above).
             return value + "[ses][es][s]";
-        }
-
-        public bool Equals(string x, string y)
-        {
-            if (x == null)
-                throw new ArgumentNullException("x");
-            if (y == null)
-                throw new ArgumentNullException("y");
-
-            var x1 = GetNormalisedString(x);
-            var y1 = GetNormalisedString(y);
-            return x1 == y1;
-        }
-
-        public int GetHashCode(string obj)
-        {
-            if (obj == null)
-                throw new ArgumentNullException("obj");
-
-            return GetNormalisedString(obj).GetHashCode();
         }
     }
 }

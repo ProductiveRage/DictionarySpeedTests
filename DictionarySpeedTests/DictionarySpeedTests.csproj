@@ -43,6 +43,8 @@
     <Compile Include="BitShiftingSearchDictionaries\BitShiftingStructSearchDictionary.cs" />
     <Compile Include="BitShiftingSearchDictionaries\BitShiftingStructSearchDictionaryWithKeyNotFoundNode.cs" />
     <Compile Include="BitShiftingSearchDictionaries\BitShiftingSearchDictionary.cs" />
+    <Compile Include="StringNormalisers\CombinedStringNormaliser.cs" />
+    <Compile Include="StringNormalisers\StringNormaliser.cs" />
     <Compile Include="StringNormalisers\DefaultStringNormaliser.cs" />
     <Compile Include="StringNormalisers\EnglishPluarityStringNormaliser.cs" />
     <Compile Include="TernarySearchTreeDictionaries\TernarySearchTreeStructDictionary.cs" />

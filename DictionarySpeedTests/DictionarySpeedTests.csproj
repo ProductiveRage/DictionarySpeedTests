@@ -44,6 +44,7 @@
     <Compile Include="BitShiftingSearchDictionaries\BitShiftingStructSearchDictionaryWithKeyNotFoundNode.cs" />
     <Compile Include="BitShiftingSearchDictionaries\BitShiftingSearchDictionary.cs" />
     <Compile Include="StringNormalisers\DefaultStringNormaliser.cs" />
+    <Compile Include="StringNormalisers\EnglishPluarityStringNormaliser.cs" />
     <Compile Include="TernarySearchTreeDictionaries\TernarySearchTreeStructDictionary.cs" />
     <Compile Include="ILookup.cs" />
     <Compile Include="Program.cs" />

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace DictionarySpeedTests.TernarySearchTreeDictionaries
+namespace DictionarySpeedTests.StringNormalisers
 {
     public interface IStringNormaliser : IEqualityComparer<string>
     {

@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace DictionarySpeedTests.TernarySearchTreeDictionaries
+namespace DictionarySpeedTests.StringNormalisers
 {
     /// <summary>
     /// This will perform string comparisons where the values have any accented characters replaced with non-accented versions, all whitespace converted to spaces and runs of

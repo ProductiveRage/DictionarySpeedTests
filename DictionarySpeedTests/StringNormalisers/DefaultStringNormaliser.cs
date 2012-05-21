@@ -10,27 +10,9 @@ namespace DictionarySpeedTests.StringNormalisers
     /// whitespace replaced with a single space, all punctuation removed and the content then lowercased.
     /// </summary>
     [Serializable]
-    public class DefaultStringNormaliser : IStringNormaliser
+    public class DefaultStringNormaliser : StringNormaliser
     {
-        public bool Equals(string x, string y)
-        {
-            if (x == null)
-                throw new ArgumentNullException("x");
-            if (y == null)
-                throw new ArgumentNullException("y");
-
-            return GetNormalisedString(x) == GetNormalisedString(y);
-        }
-
-        public int GetHashCode(string obj)
-        {
-            if (obj == null)
-                throw new ArgumentNullException("obj");
-
-            return GetNormalisedString(obj).GetHashCode();
-        }
-
-        public string GetNormalisedString(string value)
+        public override string GetNormalisedString(string value)
         {
             if (value == null)
                 throw new ArgumentNullException("value");

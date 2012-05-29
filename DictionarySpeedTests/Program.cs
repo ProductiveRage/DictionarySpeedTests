@@ -22,18 +22,14 @@ namespace DictionarySpeedTests
             // manipulated to remove dependencies to any classes in that work). From what I understand of the API's Terms of Use it's fine to distribute this
             // data here (it's essentially just a set of words that appear in some of their articles). I used that so that there was a real set of data to
             // operate on (there's 86,000-ish keys so it's not a small set but not enormous by any stretch).
-            Dictionary<string, float> data;
-            using (var stream = new FileInfo("SampleData.dat").OpenRead())
+            var keyNormaliser = new DefaultStringNormaliser();
+            var data = new Dictionary<string, float>(keyNormaliser);
+            foreach (var token in File.ReadAllText("TokenList.txt").Split('\n').Select(t => t.Trim()))
             {
-                var dataUntyped = new BinaryFormatter().Deserialize(stream);
-                if (dataUntyped == null)
-                    throw new Exception("Data represents null");
-                data = dataUntyped as Dictionary<string, float>;
-                if (data == null)
-                    throw new Exception("Data does not represent required type: Dictionary<string, float>");
+                var normalisedToken = keyNormaliser.GetNormalisedString(token);
+                if ((normalisedToken != "") && !data.ContainsKey(normalisedToken))
+                    data.Add(normalisedToken, data.Count);
             }
-            if (data.Comparer.GetType() != typeof(DefaultStringNormaliser))
-                throw new Exception("Data does not have Comparer of expected type");
 
             Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.fff") + " Generating data1..");
             var data1 = new BitShiftingSearchDictionary<string, float>(data);
@@ -43,16 +39,16 @@ namespace DictionarySpeedTests
             var data3 = new BitShiftingStructSearchDictionary<string, float>(data);
             Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.fff") + " Generating data4 [TernarySearchTree-Unsorted]..");
             var data4 = new TernarySearchTreeDictionary<float>(data, new DefaultStringNormaliser());
-            Console.WriteLine(" > BalanceFactor: " + data4.BalanceFactor);
+            Console.WriteLine(" > BalanceFactor: " + data4.GetBalanceFactor());
             Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.fff") + " Generating data5 [TernarySearchTree-Alphabetical]..");
             var data5 = new TernarySearchTreeDictionary<float>(GetAlphabeticalSortedData(data), new DefaultStringNormaliser());
-            Console.WriteLine(" > BalanceFactor: " + data5.BalanceFactor);
+            Console.WriteLine(" > BalanceFactor: " + data5.GetBalanceFactor());
             Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.fff") + " Generating data6 [TernarySearchTree-RandomSorted]..");
             var data6 = new TernarySearchTreeDictionary<float>(GetRandomSortedData(data, 0), new DefaultStringNormaliser());
-            Console.WriteLine(" > BalanceFactor: " + data6.BalanceFactor);
+            Console.WriteLine(" > BalanceFactor: " + data6.GetBalanceFactor());
             Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.fff") + " Generating data7 [TernarySearchTree-SearchTreeSortedData]..");
             var data7 = new TernarySearchTreeDictionary<float>(GetSearchTreeSortedData<float>(data), new DefaultStringNormaliser());
-            Console.WriteLine(" > BalanceFactor: " + data7.BalanceFactor);
+            Console.WriteLine(" > BalanceFactor: " + data7.GetBalanceFactor());
             Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.fff") + " Generating data8..");
             var data8 = new TernarySearchTreeStructDictionary<float>(GetSearchTreeSortedData<float>(data), new DefaultStringNormaliser());
             Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.fff") + " - Done");
@@ -118,9 +114,9 @@ namespace DictionarySpeedTests
             Console.WriteLine("improvement5 [TernarySearchTree-Alphabetical]: " + improvement5);
             var improvement6 = TotalTime0.TotalMilliseconds / TotalTime6.TotalMilliseconds;
             Console.WriteLine("improvement6 [TernarySearchTree-RandomSorted]: " + improvement6);
-			var improvement7 = TotalTime0.TotalMilliseconds / TotalTime7.TotalMilliseconds;
+            var improvement7 = TotalTime0.TotalMilliseconds / TotalTime7.TotalMilliseconds;
             Console.WriteLine("improvement7 [TernarySearchTree-SearchTreeSortedData]: " + improvement7);
-			var improvement8 = TotalTime0.TotalMilliseconds / TotalTime8.TotalMilliseconds;
+            var improvement8 = TotalTime0.TotalMilliseconds / TotalTime8.TotalMilliseconds;
             Console.WriteLine("improvement8 [TernarySearchTree-SearchTreeSortedData, struct store]: " + improvement8);
 
             Console.WriteLine("Press [Enter] to continue..");
